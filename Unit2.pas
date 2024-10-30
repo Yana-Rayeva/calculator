@@ -64,7 +64,7 @@ implementation
 {$R *.dfm}
 
 var
-  txt: string;
+  txt,  last_symbol: string;
   firstresult, thisresul, myresult: real;
 
   // запись чисел
@@ -157,26 +157,27 @@ end;
 // функция разделения строки на числа
 function TForm2.split_string(text: string): real;
 var
-  symbol, symbols, line, extracting_symbol, extracting_number: string;
-  position, J: Integer;
+  symbol, symbols, extracting_symbol, extracting_number: string; position, J: Integer;
 begin
+  firstresult := 0;
   myresult := 0;
   symbols := '+-*÷=';
+  extracting_number := '';
   for J := 1 to Length(text) do
   begin
     symbol := (text[J]);
     position := Pos(symbol, symbols);
-    if position > 0 then
+    if position = 0 then
     begin
-      extracting_symbol := text[J];
-      firstresult := calculation_result(extracting_number, extracting_symbol, firstresult);
-      // extracting_number := '';
+      extracting_number := extracting_number + symbol;
     end
     else
     begin
-      extracting_number := extracting_number + text[J];
+      extracting_symbol := symbol;
+      firstresult := calculation_result(extracting_number, extracting_symbol,
+        firstresult);
+      extracting_number := '';
     end;
-    // extracting_number := '';
   end;
   Result := myresult;
   ShowMessage(FloatToStr(myresult));
@@ -185,55 +186,54 @@ end;
 // функция подсчёта результата
 function TForm2.calculation_result(extracted_number, extracted_symbol: string; firstresult: real): real;
 var
-  symbol1: string;
+  number: real;
 begin
+  number := StrToFloat(extracted_number);
   if firstresult = 0 then
   begin
-    if symbol1 = '-' then
+    if last_symbol = '-' then
     begin
-      firstresult := StrToInt('-' + extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
-    end
-    else
+      firstresult := -number;
+    end;
+    if last_symbol = '' then
     begin
-      firstresult := StrToInt(extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
+      firstresult := number;
     end;
   end
   else
   begin
-    if symbol1 = '-' then
+    if last_symbol = '-' then
     begin
-      firstresult := firstresult + StrToInt('-' + extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
+      firstresult := firstresult - number;
     end;
-    if symbol1 = '+' then
+    if last_symbol = '+' then
     begin
-      firstresult := firstresult + StrToInt(extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
+      firstresult := firstresult + number;
     end;
-    if symbol1 = '*' then
+    if last_symbol = '*' then
     begin
-      firstresult := firstresult * StrToInt(extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
+      firstresult := firstresult * number;
     end;
-    if symbol1 = '÷' then
+    if last_symbol = '÷' then
     begin
-      firstresult := firstresult / StrToInt(extracted_number);
-      symbol1 := extracted_symbol;
-      Result := firstresult;
+      if number = 0 then
+      begin
+        ShowMessage('Error: division by zero is impossible');
+      end
+      else
+      begin
+        firstresult := firstresult / number;
+      end;
     end;
   end;
-  if extracted_symbol = '=' then
+  Result := firstresult;
+  last_symbol:= extracted_symbol;
+  if last_symbol = '=' then
   begin
     myresult := firstresult;
+    Result := myresult;
   end;
-  Result := myresult;
+
 end;
 
 // кнопка удаления
@@ -273,7 +273,6 @@ procedure TForm2.Button16Click(Sender: TObject);
 begin
   txt := finished_line(txt);
   Label1.Caption := txt;
-  // ShowMessage(FloatToStr(myresult));
 end;
 
 // кнопки цифр
