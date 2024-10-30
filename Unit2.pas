@@ -188,6 +188,10 @@ function TForm2.calculation_result(extracted_number, extracted_symbol: string; f
 var
   number: real;
 begin
+  if extracted_number = '' then
+  begin
+    extracted_number:= '0';
+  end;
   number := StrToFloat(extracted_number);
   if firstresult = 0 then
   begin
