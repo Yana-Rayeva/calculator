@@ -236,6 +236,7 @@ begin
   begin
     myresult := firstresult;
     Result := myresult;
+    last_symbol := '';
   end;
 
 end;
