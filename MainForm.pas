@@ -1,4 +1,4 @@
-﻿unit Unit2;
+﻿unit MainForm;
 
 interface
 
@@ -331,7 +331,7 @@ begin
     end;
     If bracket_counter = 0 then
     begin
-      symbol := (text[Length(text)]);
+      symbol := text[Length(text)];
       position := Pos(symbol, symbols);
       if position > 0 then
       begin
