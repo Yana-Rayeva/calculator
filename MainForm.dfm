@@ -12,10 +12,12 @@ object MainFm: TMainFm
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
     Left = 25
-    Top = 15
+    Top = 8
     Width = 260
     Height = 50
     Alignment = taRightJustify

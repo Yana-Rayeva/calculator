@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  uCalculator;
 
 type
   TMainFm = class(TForm)
@@ -24,11 +25,10 @@ type
     Button13: TButton;
     Button14: TButton;
     Button15: TButton;
-    Label1: TLabel;
     Button16: TButton;
     Button17: TButton;
     Button18: TButton;
-    procedure Button16Click(Sender: TObject);
+    Label1: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -39,29 +39,31 @@ type
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
     procedure Button10Click(Sender: TObject);
-    procedure Button15Click(Sender: TObject);
-    procedure Button14Click(Sender: TObject);
-    procedure Button13Click(Sender: TObject);
-    procedure Button12Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
-    procedure Label1Click(Sender: TObject);
-    procedure Button18Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
+    procedure Button14Click(Sender: TObject);
+    procedure Button15Click(Sender: TObject);
+    procedure Button16Click(Sender: TObject);
     procedure Button17Click(Sender: TObject);
+    procedure Button18Click(Sender: TObject);
+    procedure Label1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    function add_text(s, text: string): string;
-    function delete_symbol_from_text(text: string): string;
-    function check_correct_input_number(s, text: string): string;
-    function check_correct_input_symbol(s, text: string): string;
-    function check_correct_input_minus(s, text: string): string;
-    function check_correct_input_open_bracket(s, text: string): string;
-    function check_correct_input_close_bracket(s, text: string): string;
-    function bracket_counter_function(counter: boolean): integer;
-    function check_bracket_counter_function(text: string): integer;
-    function finished_line(text: string): string;
+    FCalculator: TCalculator;
+    FTxt: string;
+    FBracketCounter: integer;
+    function AddText(ASymbol, AText: string): string;
+    function DeleteSymbolFromText(AText: string): string;
+    function CheckBracketCounterFunction(AText: string): integer;
+    function CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
+    function CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
+    function CheckCorrectInputNumber(ASymbol, AText: string): string;
+    function CheckCorrectInputMinus(ASymbol, AText: string): string;
+    function CheckCorrectInputSymbol(ASymbol, AText: string): string;
+    function FinishedLine(AText: string): string;
 
-    function split_string(text: string): real;
-    function calculation_result(extracted_number, extracted_symbol: string;
-      firstresult: real): real;
     { Private declarations }
   public
     { Public declarations }
@@ -74,215 +76,91 @@ implementation
 
 {$R *.dfm}
 
-var
-  txt, last_symbol: string;
-  firstresult, thisresul, myresult: real;
-  bracket_counter: integer;
-
-  // запись символов в строку
-function TMainFm.add_text(s, text: string): string;
+// запись символов в строку
+function TMainFm.AddText(ASymbol, AText: string): string;
 begin
-  text := text + s;
-  Result := text;
+  AText := AText + ASymbol;
+  Result := AText;
 end;
 
 // удаление символов из строки
-function TMainFm.delete_symbol_from_text(text: string): string;
+function TMainFm.DeleteSymbolFromText(AText: string): string;
 var
   symbol: string;
 begin
-  symbol := (text[Length(text)]);
-  bracket_counter := check_bracket_counter_function(text);
-  Delete(text, Length(text), 1);
-  Result := text;
+  symbol := (AText[Length(AText)]);
+  FBracketCounter := CheckBracketCounterFunction(AText);
+  Delete(AText, Length(AText), 1);
+  Result := AText;
 end;
 
-// Функция счётчика скобок открытия и закрытия
-function TMainFm.bracket_counter_function(counter: boolean): integer;
-begin
-  if counter = true then
-  begin
-    bracket_counter := bracket_counter + 1;
-    Result := bracket_counter;
-  end;
-  if counter = false then
-  begin
-    bracket_counter := bracket_counter - 1;
-    Result := bracket_counter;
-  end;
-end;
-
-// Функция проверки удаляемого символа для обновления счётчика скобок
-function TMainFm.check_bracket_counter_function(text: string): integer;
+// проверка удаляемого символа для обновления счётчика скобок
+function TMainFm.CheckBracketCounterFunction(AText: string): integer;
 var
   symbol: string;
 begin
-  symbol := (text[Length(text)]);
+  symbol := (AText[Length(AText)]);
   if symbol = ')' then
   begin
-    bracket_counter := bracket_counter_function(true);
-    Result := bracket_counter;
+    FBracketCounter := FBracketCounter + 1;
+    Result := FBracketCounter;
   end
   else if symbol = '(' then
   begin
-    bracket_counter := bracket_counter_function(false);
-    Result := bracket_counter;
+    FBracketCounter := FBracketCounter - 1;
+    Result := FBracketCounter;
   end
   else
   begin
-    Result := bracket_counter;
+    Result := FBracketCounter;
   end;
 end;
 
-// Функция проверки корректности введения "("
-function TMainFm.check_correct_input_open_bracket(s, text: string): string;
+// проверка корректности введения "("
+function TMainFm.CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
 var
   symbol, symbols: string;
   position: integer;
 begin
-  if Length(text) > 0 then
+  if Length(AText) > 0 then
   begin
     symbols := '0123456789)';
-    symbol := (text[Length(text)]);
+    symbol := (AText[Length(AText)]);
     position := Pos(symbol, symbols);
     if position > 0 then
     begin
-      text := add_text('*' + s, text);
-      bracket_counter := bracket_counter_function(true);
-      Result := text;
+      AText := AddText('*' + ASymbol, AText);
+      FBracketCounter := FBracketCounter + 1;
+      Result := AText;
     end
     else
     begin
-      text := add_text(s, text);
-      bracket_counter := bracket_counter_function(true);
-      Result := text;
+      AText := AddText(ASymbol, AText);
+      FBracketCounter := FBracketCounter + 1;
+      Result := AText;
     end;
   end
   else
   begin
-    text := add_text(s, text);
-    bracket_counter := bracket_counter_function(true);
-    Result := text;
+    AText := AddText(ASymbol, AText);
+    FBracketCounter := FBracketCounter + 1;
+    Result := AText;
   end;
 end;
 
-// Функция проверки корректности введения ")"
-function TMainFm.check_correct_input_close_bracket(s, text: string): string;
+// проверка корректности введения ")"
+function TMainFm.CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
 var
   symbol, symbols: string;
   position: integer;
 begin
-  If bracket_counter > 0 then
+  If FBracketCounter > 0 then
   begin
-    symbol := (text[Length(text)]);
+    symbol := (AText[Length(AText)]);
     if symbol = '(' then
     begin
       ShowMessage('the value between the brackets "( )" is missing');
-      Result := text;
-    end
-    else
-    begin
-    symbols := '+-*÷';
-    position := Pos(symbol, symbols);
-    if position > 0 then
-    begin
-      text := delete_symbol_from_text(text);
-      text := add_text(s, text);
-      bracket_counter := bracket_counter_function(false);
-      Result := text;
-    end
-    else
-    begin
-      text := add_text(s, text);
-      bracket_counter := bracket_counter_function(false);
-      Result := text;
-    end;
-    end;
-  end
-  else
-  begin
-  Result := text;
-  ShowMessage('The open bracket "(" not found');
-  end;
-end;
-
-// Функция проверки корректности введения цифр
-function TMainFm.check_correct_input_number(s, text: string): string;
-var
-  symbol: string;
-
-begin
-  if Length(text) > 0 then
-  begin
-    symbol := (text[Length(text)]);
-    if symbol = ')' then
-    begin
-      text := add_text('*' + s, text);
-      Result := text;
-    end
-    else
-    begin
-      text := add_text(s, text);
-      Result := text;
-    end;
-  end
-  else
-  begin
-    text := add_text(s, text);
-    Result := text;
-  end;
-end;
-
-// Функция проверки корректности введения минуса
-function TMainFm.check_correct_input_minus(s, text: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  if Length(text) > 0 then
-  begin
-    symbols := '+-*÷';
-    symbol := (text[Length(text)]);
-    position := Pos(symbol, symbols);
-    if position > 0 then
-    begin
-      text := delete_symbol_from_text(text);
-      text := add_text(s, text);
-      Result := text;
-    end
-    else
-    begin
-      if symbol = '(' then
-        begin
-          text := add_text('0'+s, text);
-          Result := text;
-        end
-        else
-        begin
-        text := add_text(s, text);
-        Result := text;
-        end;
-    end;
-  end
-  else
-  begin
-    text := add_text('0'+s, text);
-    Result := text;
-  end;
-end;
-
-// Функция проверки корректности введения операций
-function TMainFm.check_correct_input_symbol(s, text: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  if Length(text) > 0 then
-  begin
-    symbol := (text[Length(text)]);
-    if symbol = '(' then
-    begin
-      Result := text;
+      Result := AText;
     end
     else
     begin
@@ -290,55 +168,162 @@ begin
       position := Pos(symbol, symbols);
       if position > 0 then
       begin
-        text := delete_symbol_from_text(text);
-        symbol := (text[Length(text)]);
-        if symbol = '(' then
-        begin
-          Result := text;
-        end
-        else
-        begin
-        text := add_text(s, text);
-        Result := text;
-        end;
+        AText := DeleteSymbolFromText(AText);
+        AText := AddText(ASymbol, AText);
+        FBracketCounter := FBracketCounter - 1;
+        Result := AText;
       end
       else
       begin
-        text := add_text(s, text);
-        Result := text;
+        AText := AddText(ASymbol, AText);
+        FBracketCounter := FBracketCounter - 1;
+        Result := AText;
       end;
     end;
   end
   else
   begin
-    Result := text;
+    Result := AText;
+    ShowMessage('The open bracket "(" not found');
   end;
 end;
 
-// Функция вывода равно
-function TMainFm.finished_line(text: string): string;
+// проверка введения цифр после ")"
+function TMainFm.CheckCorrectInputNumber(ASymbol, AText: string): string;
+var
+  symbol: string;
+
+begin
+  if Length(AText) > 0 then
+  begin
+    symbol := (AText[Length(AText)]);
+    if symbol = ')' then
+    begin
+      AText := AddText('*' + ASymbol, AText);
+      Result := AText;
+    end
+    else
+    begin
+      AText := AddText(ASymbol, AText);
+      Result := AText;
+    end;
+  end
+  else
+  begin
+    AText := AddText(ASymbol, AText);
+    Result := AText;
+  end;
+end;
+
+// проверка корректности введения минуса
+function TMainFm.CheckCorrectInputMinus(ASymbol, AText: string): string;
+var
+  symbol, symbols: string;
+  position: integer;
+begin
+  if Length(AText) > 0 then
+  begin
+    symbols := '+-*÷';
+    symbol := (AText[Length(AText)]);
+    position := Pos(symbol, symbols);
+    if position > 0 then
+    begin
+      AText := DeleteSymbolFromText(AText);
+      AText := AddText(ASymbol, AText);
+      Result := AText;
+    end
+    else
+    begin
+      if symbol = '(' then
+      begin
+        AText := AddText('0' + ASymbol, AText);
+        Result := AText;
+      end
+      else
+      begin
+        AText := AddText(ASymbol, AText);
+        Result := AText;
+      end;
+    end;
+  end
+  else
+  begin
+    AText := AddText('0' + ASymbol, AText);
+    Result := AText;
+  end;
+end;
+
+// проверка корректности введения операций (+ * ÷)
+function TMainFm.CheckCorrectInputSymbol(ASymbol, AText: string): string;
+var
+  symbol, symbols: string;
+  position: integer;
+begin
+  if Length(AText) > 0 then
+  begin
+    symbol := (AText[Length(AText)]);
+    if symbol = '(' then
+    begin
+      Result := AText;
+    end
+    else
+    begin
+      symbols := '+-*÷';
+      position := Pos(symbol, symbols);
+      if position > 0 then
+      begin
+        AText := DeleteSymbolFromText(AText);
+        symbol := (AText[Length(AText)]);
+        if symbol = '(' then
+        begin
+          Result := AText;
+        end
+        else
+        begin
+          AText := AddText(ASymbol, AText);
+          Result := AText;
+        end;
+      end
+      else
+      begin
+        AText := AddText(ASymbol, AText);
+        Result := AText;
+      end;
+    end;
+  end
+  else
+  begin
+    Result := AText;
+  end;
+end;
+
+// проверка строки после нажатия "="
+function TMainFm.FinishedLine(AText: string): string;
 var
   symbol, symbols: string;
   position: integer;
 begin
   symbols := '+-*÷';
-  if Length(text) > 0 then
+  if Length(AText) > 0 then
   begin
-    if text = '-' then
+    if AText = '-' then
     begin
       ShowMessage('no result');
-      text := '';
+      AText := '';
     end;
-    If bracket_counter = 0 then
+    If FBracketCounter = 0 then
     begin
-      symbol := text[Length(text)];
+      symbol := AText[Length(AText)];
       position := Pos(symbol, symbols);
       if position > 0 then
       begin
-        text := delete_symbol_from_text(text);
+        AText := DeleteSymbolFromText(AText);
       end;
-      text := text + '=';
-      myresult := split_string(text);
+      AText := AText + '=';
+      Result:= FormatFloat('0.##', FCalculator.Calc(AText));
+      //FCalculator := Calc(AText);
+      //Result := '';
+      // Строка, запускающая вычисление результата
     end
     else
     begin
@@ -349,211 +334,131 @@ begin
   begin
     ShowMessage('no result');
   end;
-  Result := text;
+  Result := AText;
 end;
 
-//-----------------------------------------------------------------------------//
-// Функция разделения строки на числа
-function TMainFm.split_string(text: string): real;
-var
-  symbol, symbols, extracting_symbol, extracting_number: string;
-  position, J: integer;
+// создание объекта "FCalculator" после создания главного окна
+procedure TMainFm.FormCreate(Sender: TObject);
 begin
-  firstresult := 0;
-  myresult := 0;
-  symbols := '+-*÷=';
-  extracting_number := '';
-  for J := 1 to Length(text) do
-  begin
-    symbol := (text[J]);
-    position := Pos(symbol, symbols);
-    if position = 0 then
-    begin
-      extracting_number := extracting_number + symbol;
-    end
-    else
-    begin
-      extracting_symbol := symbol;
-      firstresult := calculation_result(extracting_number, extracting_symbol,
-        firstresult);
-      extracting_number := '';
-    end;
-  end;
-  Result := myresult;
-  ShowMessage(FloatToStr(myresult));
+  FCalculator := TCalculator.Create;
 end;
 
-// Функция подсчёта результата
-function TMainFm.calculation_result(extracted_number, extracted_symbol: string;
-  firstresult: real): real;
-var
-  number: real;
+procedure TMainFm.FormDestroy(Sender: TObject);
 begin
-  if extracted_number = '' then
-  begin
-    extracted_number := '0';
-  end;
-  number := StrToFloat(extracted_number);
-  if firstresult = 0 then
-  begin
-    if last_symbol = '-' then
-    begin
-      firstresult := -number;
-    end;
-    if last_symbol = '' then
-    begin
-      firstresult := number;
-    end;
-  end
-  else
-  begin
-    if last_symbol = '-' then
-    begin
-      firstresult := firstresult - number;
-    end;
-    if last_symbol = '+' then
-    begin
-      firstresult := firstresult + number;
-    end;
-    if last_symbol = '*' then
-    begin
-      firstresult := firstresult * number;
-    end;
-    if last_symbol = '÷' then
-    begin
-      if number = 0 then
-      begin
-        ShowMessage('Error: division by zero is impossible');
-        // выводит последнее подсчитанное значение (исправить)
-      end
-      else
-      begin
-        firstresult := firstresult / number;
-      end;
-    end;
-  end;
-  Result := firstresult;
-  last_symbol := extracted_symbol;
-  if last_symbol = '=' then
-  begin
-    myresult := firstresult;
-    Result := myresult;
-    last_symbol := '';
-  end;
+  FCalculator.Free;
 end;
-//-----------------------------------------------------------------------------//
 
 // кнопка удаления
 procedure TMainFm.Button11Click(Sender: TObject);
 begin
-  txt := delete_symbol_from_text(txt);
-  Label1.Caption := txt;
+  FTxt := DeleteSymbolFromText(FTxt);
+  Label1.Caption := FTxt;
 end;
 
 // кнопки символов
 procedure TMainFm.Button12Click(Sender: TObject);
 begin
-  txt := check_correct_input_symbol('+', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputSymbol('+', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button13Click(Sender: TObject);
 begin
-  txt := check_correct_input_minus('-', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputMinus('-', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button14Click(Sender: TObject);
 begin
-  txt := check_correct_input_symbol('*', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputSymbol('*', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button15Click(Sender: TObject);
 begin
-  txt := check_correct_input_symbol('÷', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputSymbol('÷', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 // Кнопки скобок
 procedure TMainFm.Button17Click(Sender: TObject);
 begin
-  txt := check_correct_input_open_bracket('(', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputOpenBracket('(', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button18Click(Sender: TObject);
 begin
-  txt := check_correct_input_close_bracket(')', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputCloseBracket(')', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 // кнопка равно
 procedure TMainFm.Button16Click(Sender: TObject);
 begin
-  txt := finished_line(txt);
-  Label1.Caption := txt;
+  FTxt := FinishedLine(FTxt);
+  Label1.Caption := FTxt;
 end;
 
 // кнопки цифр
 procedure TMainFm.Button10Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('0', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('0', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button1Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('1', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('1', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button2Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('2', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('2', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button3Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('3', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('3', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button4Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('4', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('4', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button5Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('5', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('5', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button6Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('6', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('6', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button7Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('7', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('7', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button8Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('8', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('8', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Button9Click(Sender: TObject);
 begin
-  txt := check_correct_input_number('9', txt);
-  Label1.Caption := txt;
+  FTxt := CheckCorrectInputNumber('9', FTxt);
+  Label1.Caption := FTxt;
 end;
 
 procedure TMainFm.Label1Click(Sender: TObject);

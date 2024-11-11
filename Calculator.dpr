@@ -2,7 +2,8 @@ program Calculator;
 
 uses
   Vcl.Forms,
-  MainForm in 'MainForm.pas' {MainFm};
+  MainForm in 'MainForm.pas' {MainFm},
+  uCalculator in 'uCalculator.pas';
 
 {$R *.res}
 
