@@ -187,4 +187,13 @@ object MainFm: TMainFm
     TabOrder = 17
     OnClick = Button18Click
   end
+  object Button19: TButton
+    Left = 112
+    Top = 64
+    Width = 75
+    Height = 25
+    Caption = 'Button19'
+    TabOrder = 18
+    OnClick = Button19Click
+  end
 end

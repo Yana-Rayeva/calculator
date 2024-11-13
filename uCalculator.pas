@@ -9,32 +9,28 @@ uses
 
 type
   TNode = class
+
   private
-    FNodeID: string;
     FIsOperation: Boolean;
     FOperationPriority: Integer;
-    FValue: Integer;
+    FValue: Double;
     FLeft: TNode;
     FRight: TNode;
-
   public
-    constructor Create(const ANodeID: string; AIsOperation: Boolean;
-      AOperationPriority: Integer; AValue: Integer; ALeft: TNode;
-      ARight: TNode);
+    constructor Create(const AIsOperation: Boolean; AOperationPriority: Integer;
+      AValue: Double; ALeft: TNode; ARight: TNode);
+
   end;
 
   TCalculator = class
+
   private
     FRootNode: TNode;
-    FCurrentID: string;
-
     FCurrentNode: TNode;
-    function AddNodeToRoot(ARootNode, ANode: TNode): TNode;
-    procedure TNodeCreate(AValue: string);
-
   public
     function Calc(AText: string): Double;
-    procedure Parse(AText: string);
+    function Parse(AText: string): TNode;
+    function GetValue(ANode: TNode): Double;
   end;
 
 implementation
@@ -42,10 +38,9 @@ implementation
 { TNode }
 { TCalculator }
 
-constructor TNode.Create(const ANodeID: string; AIsOperation: Boolean;
-  AOperationPriority: Integer; AValue: Integer; ALeft: TNode; ARight: TNode);
+constructor TNode.Create(const AIsOperation: Boolean;
+  AOperationPriority: Integer; AValue: Double; ALeft: TNode; ARight: TNode);
 begin
-  FNodeID := ANodeID;
   FIsOperation := AIsOperation;
   FOperationPriority := AOperationPriority;
   FValue := AValue;
@@ -53,93 +48,161 @@ begin
   FRight := ARight;
 end;
 
-procedure TCalculator.Parse(AText: string);
-var
-  vCounter, vPosition: Integer;
-  vSymbol, vSymbols, vExtracting_symbol, vExtracting_number: string;
+function TCalculator.GetValue(ANode: TNode): Double;
 begin
-  vSymbols := '+-*÷=()';
-  for vCounter := 1 to Length(AText) do
+  if ANode.FIsOperation = True then
   begin
-    vSymbol := (AText[vCounter]);
-    vPosition := Pos(vSymbol, vSymbols);
-    if vPosition = 0 then
-    begin
-      vExtracting_number := vExtracting_number + vSymbol;
-    end
+    case StrToInt(FloatToStr(ANode.FValue)) of
+      0:
+        begin
+          Result := GetValue(ANode.FLeft) + GetValue(ANode.FRight);
+        end;
+      1:
+        begin
+          Result := GetValue(ANode.FLeft) - GetValue(ANode.FRight);
+        end;
+      10:
+        begin
+          Result := GetValue(ANode.FLeft) * GetValue(ANode.FRight);
+        end;
+      11:
+        begin
+          if GetValue(ANode.FRight) <> 0 then
+            Result := GetValue(ANode.FLeft) / GetValue(ANode.FRight)
+          else
+            ShowMessage('Error')
+        end;
     else
-    begin
-      if vExtracting_number <> '' then
-      begin
-        TNodeCreate(vExtracting_number);
-        vExtracting_number := '';
-      end;
-      vExtracting_symbol := vSymbol;
-      TNodeCreate(vExtracting_symbol);
+      //
     end;
-  end;
-end;
-
-//
-procedure TCalculator.TNodeCreate(AValue: string);
-var
-  // vNodeID: string;
-  vValue: Integer;
-begin
-  if AValue = '=' then
-  begin
-    FCurrentID := '';
-  end
-  else if AValue = '(' then
-  begin
-    FCurrentID := '';
-  end
-  else if AValue = ')' then
-  begin
-    FCurrentID := '';
-  end
-  else if AValue = '+' then
-  begin
-    FCurrentNode := TNode.Create('0', true, 1, 00, nil, nil);
-    FRootNode := AddNodeToRoot(FRootNode, FCurrentNode);
-  end
-  else if AValue = '-' then
-  begin
-    FCurrentNode := TNode.Create('0', true, 1, 01, nil, nil);
-    FRootNode := AddNodeToRoot(FRootNode, FCurrentNode);
-  end
-  else if AValue = '*' then
-  begin
-    FCurrentNode := TNode.Create('0', true, 1, 10, nil, nil);
-    FRootNode := AddNodeToRoot(FRootNode, FCurrentNode);
-  end
-  else if AValue = '÷' then
-  begin
-    FCurrentNode := TNode.Create('0', true, 1, 11, nil, nil);
-    FRootNode := AddNodeToRoot(FRootNode, FCurrentNode);
   end
   else
   begin
-    vValue := StrToInt(AValue);
-    FCurrentNode := TNode.Create('0', false, 0, vValue, nil, nil);
-    FRootNode := AddNodeToRoot(FRootNode, FCurrentNode);
+    Result := ANode.FValue;
   end;
+
 end;
 
-function TCalculator.AddNodeToRoot(ARootNode, ANode: TNode): TNode;
+function TCalculator.Parse(AText: string): TNode;
+var
+  i, vPosition, vBracketCount: Integer;
+  vRight, vLeft: string;
+  vValue: Double;
+  vСheckbox: Boolean;
 begin
+  vBracketCount := 0;
+  vСheckbox := False;
+  // Для поиска + и - первого уровня вложения
+  for i := Length(AText) downto 1 do
+  begin
+    if vСheckbox = True then
+      break;
+    case AText[i] of
+      '(':
+        vBracketCount := vBracketCount + 1;
+      ')':
+        vBracketCount := vBracketCount - 1;
+      '+':
+        begin
+          if vBracketCount = 0 then
+          begin
+            vСheckbox := True;
+            vLeft := Copy(AText, 1, i - 1);
+            vRight := Copy(AText, i + 1, Length(AText) - i);
+            FCurrentNode := TNode.Create(True, 0, 00, Parse(vLeft),
+              Parse(vRight));
+            // Вот тут нужно выйти из цикла (break)
+            Result := FCurrentNode;
+          end;
+        end;
+      '-':
+        begin
+          if vBracketCount = 0 then
+          begin
+            vСheckbox := True;
+            vLeft := Copy(AText, 1, i - 1);
+            vRight := Copy(AText, i + 1, Length(AText) - i);
+            FCurrentNode := TNode.Create(True, 0, 01, Parse(vLeft),
+              Parse(vRight));
+            Result := FCurrentNode;
+          end;
+        end;
+    else
+      // Else from Case1
+    end;
+  end;
 
+  vBracketCount := 0;
+  // Для поиска * и ÷ первого уровня вложения
+  for i := Length(AText) downto 1 do
+  begin
+    if vСheckbox = True then
+      break;
+    case AText[i] of
+      '(':
+        vBracketCount := vBracketCount + 1;
+      ')':
+        vBracketCount := vBracketCount - 1;
+      '*':
+        begin
+          if vBracketCount = 0 then
+          begin
+            vСheckbox := True;
+            vLeft := Copy(AText, 1, i - 1);
+            vRight := Copy(AText, i + 1, Length(AText) - i);
+            FCurrentNode := TNode.Create(True, 1, 10, Parse(vLeft),
+              Parse(vRight));
+            Result := FCurrentNode;
+          end;
+        end;
+      '÷':
+        begin
+          if vBracketCount = 0 then
+          begin
+            vСheckbox := True;
+            vLeft := Copy(AText, 1, i - 1);
+            vRight := Copy(AText, i + 1, Length(AText) - i);
+            FCurrentNode := TNode.Create(True, 1, 11, Parse(vLeft),
+              Parse(vRight));
+            Result := FCurrentNode;
+          end;
+        end;
+    else
+      // Else from Case2
+    end;
+  end;
 
+  // Тут два варианта, либо всё выражение вложено в скобки, либо всё выражение является числом
+  if vСheckbox = False then
+  begin
+    if (Length(AText) > 0) and (AText[1] = '(') and (AText[Length(AText)] = ')')
+    then
+    begin
+      vСheckbox := True;
+      AText := Copy(AText, 2, Length(AText) - 2);
+      FCurrentNode := Parse(AText);
+      Result := FCurrentNode;
+    end
+    else
+    begin
 
-   Result := FRootNode;
+      vValue := StrToFloat(AText);
+      FCurrentNode := TNode.Create(False, 0, vValue, nil, nil);
+      Result := FCurrentNode;
+
+      vСheckbox := False;
+    end;
+  end;
+  // if vСheckbox = False then Break;
+  // Конец функции Parse
 end;
 
 // ----------------------------------------------------------------------------//
 function TCalculator.Calc(AText: string): Double;
 begin
-  Parse(AText);
-  //
-  Result := 0;
+  FRootNode := Parse(AText);
+  Result := GetValue(FRootNode);
+  ShowMessage(FormatFloat('0.##', Result));
 end;
 
 end.

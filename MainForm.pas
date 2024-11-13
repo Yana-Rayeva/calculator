@@ -29,6 +29,7 @@ type
     Button17: TButton;
     Button18: TButton;
     Label1: TLabel;
+    Button19: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -50,6 +51,7 @@ type
     procedure Label1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure Button19Click(Sender: TObject);
   private
     FCalculator: TCalculator;
     FTxt: string;
@@ -319,8 +321,9 @@ begin
       begin
         AText := DeleteSymbolFromText(AText);
       end;
-      AText := AText + '=';
+//      AText := AText + '=';
       Result:= FormatFloat('0.##', FCalculator.Calc(AText));
+      ShowMessage(Result);
       //FCalculator := Calc(AText);
       //Result := '';
       // Строка, запускающая вычисление результата
@@ -391,6 +394,11 @@ procedure TMainFm.Button18Click(Sender: TObject);
 begin
   FTxt := CheckCorrectInputCloseBracket(')', FTxt);
   Label1.Caption := FTxt;
+end;
+
+procedure TMainFm.Button19Click(Sender: TObject);
+begin
+  FCalculator.Calc('15+(87-44÷2)*(3-1)+((7+0)÷7)-6')
 end;
 
 // кнопка равно
