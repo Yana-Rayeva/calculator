@@ -9,7 +9,6 @@ uses
 
 type
   TNode = class
-
   private
     FIsOperation: Boolean;
     FOperationPriority: Integer;
@@ -19,11 +18,9 @@ type
   public
     constructor Create(const AIsOperation: Boolean; AOperationPriority: Integer;
       AValue: Double; ALeft: TNode; ARight: TNode);
-
   end;
 
   TCalculator = class
-
   private
     FRootNode: TNode;
     FCurrentNode: TNode;
@@ -38,6 +35,7 @@ implementation
 { TNode }
 { TCalculator }
 
+// создание узла дерева
 constructor TNode.Create(const AIsOperation: Boolean;
   AOperationPriority: Integer; AValue: Double; ALeft: TNode; ARight: TNode);
 begin
@@ -48,6 +46,7 @@ begin
   FRight := ARight;
 end;
 
+// подсчёт значения узла
 function TCalculator.GetValue(ANode: TNode): Double;
 begin
   if ANode.FIsOperation = True then
@@ -73,16 +72,15 @@ begin
             ShowMessage('Error')
         end;
     else
-      //
     end;
   end
   else
   begin
     Result := ANode.FValue;
   end;
-
 end;
 
+// пасинг строки
 function TCalculator.Parse(AText: string): TNode;
 var
   i, vPosition, vBracketCount: Integer;
@@ -92,7 +90,7 @@ var
 begin
   vBracketCount := 0;
   vСheckbox := False;
-  // Для поиска + и - первого уровня вложения
+  // Для поиска + и - вне скобок
   for i := Length(AText) downto 1 do
   begin
     if vСheckbox = True then
@@ -111,7 +109,6 @@ begin
             vRight := Copy(AText, i + 1, Length(AText) - i);
             FCurrentNode := TNode.Create(True, 0, 00, Parse(vLeft),
               Parse(vRight));
-            // Вот тут нужно выйти из цикла (break)
             Result := FCurrentNode;
           end;
         end;
@@ -128,12 +125,10 @@ begin
           end;
         end;
     else
-      // Else from Case1
     end;
   end;
-
   vBracketCount := 0;
-  // Для поиска * и ÷ первого уровня вложения
+  // Для поиска * и ÷ вне скобок
   for i := Length(AText) downto 1 do
   begin
     if vСheckbox = True then
@@ -168,11 +163,10 @@ begin
           end;
         end;
     else
-      // Else from Case2
     end;
   end;
 
-  // Тут два варианта, либо всё выражение вложено в скобки, либо всё выражение является числом
+  // удаление крайних скобок
   if vСheckbox = False then
   begin
     if (Length(AText) > 0) and (AText[1] = '(') and (AText[Length(AText)] = ')')
@@ -184,20 +178,17 @@ begin
       Result := FCurrentNode;
     end
     else
+    // создание узла с числом (листья дерева)
     begin
-
       vValue := StrToFloat(AText);
       FCurrentNode := TNode.Create(False, 0, vValue, nil, nil);
       Result := FCurrentNode;
-
       vСheckbox := False;
     end;
   end;
-  // if vСheckbox = False then Break;
-  // Конец функции Parse
 end;
 
-// ----------------------------------------------------------------------------//
+// запуск пасинга, вычисления и вывод результата
 function TCalculator.Calc(AText: string): Double;
 begin
   FRootNode := Parse(AText);

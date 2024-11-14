@@ -29,7 +29,6 @@ type
     Button17: TButton;
     Button18: TButton;
     Label1: TLabel;
-    Button19: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -51,7 +50,6 @@ type
     procedure Label1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Button19Click(Sender: TObject);
   private
     FCalculator: TCalculator;
     FTxt: string;
@@ -65,10 +63,7 @@ type
     function CheckCorrectInputMinus(ASymbol, AText: string): string;
     function CheckCorrectInputSymbol(ASymbol, AText: string): string;
     function FinishedLine(AText: string): string;
-
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 var
@@ -90,10 +85,17 @@ function TMainFm.DeleteSymbolFromText(AText: string): string;
 var
   symbol: string;
 begin
-  symbol := (AText[Length(AText)]);
-  FBracketCounter := CheckBracketCounterFunction(AText);
-  Delete(AText, Length(AText), 1);
-  Result := AText;
+  if Length(AText) > 0 then
+  begin
+    symbol := (AText[Length(AText)]);
+    FBracketCounter := CheckBracketCounterFunction(AText);
+    Delete(AText, Length(AText), 1);
+    Result := AText;
+  end
+  else
+  begin
+    Result := '';
+  end;
 end;
 
 // проверка удаляемого символа для обновления счётчика скобок
@@ -101,21 +103,22 @@ function TMainFm.CheckBracketCounterFunction(AText: string): integer;
 var
   symbol: string;
 begin
-  symbol := (AText[Length(AText)]);
-  if symbol = ')' then
-  begin
-    FBracketCounter := FBracketCounter + 1;
-    Result := FBracketCounter;
-  end
-  else if symbol = '(' then
-  begin
-    FBracketCounter := FBracketCounter - 1;
-    Result := FBracketCounter;
-  end
+  case AText[Length(AText)] of
+    ')':
+      begin
+        FBracketCounter := FBracketCounter + 1;
+        Result := FBracketCounter;
+      end;
+    '(':
+      begin
+        FBracketCounter := FBracketCounter - 1;
+        Result := FBracketCounter;
+
+      end;
   else
-  begin
     Result := FBracketCounter;
   end;
+
 end;
 
 // проверка корректности введения "("
@@ -321,12 +324,7 @@ begin
       begin
         AText := DeleteSymbolFromText(AText);
       end;
-//      AText := AText + '=';
-      Result:= FormatFloat('0.##', FCalculator.Calc(AText));
-      ShowMessage(Result);
-      //FCalculator := Calc(AText);
-      //Result := '';
-      // Строка, запускающая вычисление результата
+      Result := FormatFloat('0.##', FCalculator.Calc(AText));
     end
     else
     begin
@@ -394,11 +392,6 @@ procedure TMainFm.Button18Click(Sender: TObject);
 begin
   FTxt := CheckCorrectInputCloseBracket(')', FTxt);
   Label1.Caption := FTxt;
-end;
-
-procedure TMainFm.Button19Click(Sender: TObject);
-begin
-  FCalculator.Calc('15+(87-44÷2)*(3-1)+((7+0)÷7)-6')
 end;
 
 // кнопка равно
