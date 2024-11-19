@@ -125,7 +125,7 @@ end;
 
 procedure TMainFm.Button15Click(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('÷', FCurrentCalc.CalcLine);
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('/', FCurrentCalc.CalcLine);
   Label1.Caption := FCurrentCalc.CalcLine;
 end;
 

@@ -28,16 +28,7 @@ type
     FRootNode: TNode;
     FCurrentNode: TNode;
     FError: Boolean;
-  public
-    CalcLine: string;
-    BracketCounter: Integer;
-    function Calc(AText: string): string;
-    function Parse(AText: string): TNode;
-    function GetValue(ANode: TNode): Double;
-    destructor Destroy; override;
-    function AddSymbol(ASymbol, AText: string): string;
     function AddText(ASymbol, AText: string): string;
-    function DeleteSymbolFromText(AText: string): string;
     function CheckBracketCounterFunction(AText: string): Integer;
     function CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
     function CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
@@ -45,6 +36,15 @@ type
     function CheckCorrectInputMinus(ASymbol, AText: string): string;
     function CheckCorrectInputSymbol(ASymbol, AText: string): string;
     function FinishedLine(AText: string): string;
+    function Parse(AText: string): TNode;
+    function GetValue(ANode: TNode): Double;
+  public
+    CalcLine: string;
+    BracketCounter: Integer;
+    function Calc(AText: string): string;
+    function AddSymbol(ASymbol, AText: string): string;
+    function DeleteSymbolFromText(AText: string): string;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -537,7 +537,6 @@ begin
       Result := 'Error: Division by zero';
     end;
   end;
-
 end;
 
 end.
