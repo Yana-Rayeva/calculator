@@ -2,8 +2,8 @@ object MainFm: TMainFm
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'MainFm'
-  ClientHeight = 340
+  Caption = 'Calculator'
+  ClientHeight = 399
   ClientWidth = 310
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,17 +17,23 @@ object MainFm: TMainFm
   TextHeight = 15
   object Label1: TLabel
     Left = 25
-    Top = 8
+    Top = 64
     Width = 260
-    Height = 50
+    Height = 41
     Alignment = taRightJustify
     AutoSize = False
-    Caption = 'Hello world '
+    Caption = ' '
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentFont = False
     OnClick = Label1Click
   end
   object Button1: TButton
     Left = 25
-    Top = 210
+    Top = 266
     Width = 50
     Height = 50
     Caption = '1'
@@ -36,7 +42,7 @@ object MainFm: TMainFm
   end
   object Button2: TButton
     Left = 95
-    Top = 210
+    Top = 266
     Width = 50
     Height = 50
     Caption = '2'
@@ -45,7 +51,7 @@ object MainFm: TMainFm
   end
   object Button3: TButton
     Left = 165
-    Top = 210
+    Top = 266
     Width = 50
     Height = 50
     Caption = '3'
@@ -54,7 +60,7 @@ object MainFm: TMainFm
   end
   object Button4: TButton
     Left = 25
-    Top = 150
+    Top = 206
     Width = 50
     Height = 50
     Caption = '4'
@@ -63,7 +69,7 @@ object MainFm: TMainFm
   end
   object Button5: TButton
     Left = 95
-    Top = 150
+    Top = 206
     Width = 50
     Height = 50
     Caption = '5'
@@ -72,7 +78,7 @@ object MainFm: TMainFm
   end
   object Button6: TButton
     Left = 165
-    Top = 150
+    Top = 206
     Width = 50
     Height = 50
     Caption = '6'
@@ -81,7 +87,7 @@ object MainFm: TMainFm
   end
   object Button7: TButton
     Left = 25
-    Top = 90
+    Top = 146
     Width = 50
     Height = 50
     Caption = '7'
@@ -90,7 +96,7 @@ object MainFm: TMainFm
   end
   object Button8: TButton
     Left = 95
-    Top = 90
+    Top = 146
     Width = 50
     Height = 50
     Caption = '8'
@@ -99,7 +105,7 @@ object MainFm: TMainFm
   end
   object Button9: TButton
     Left = 165
-    Top = 90
+    Top = 146
     Width = 50
     Height = 50
     Caption = '9'
@@ -108,7 +114,7 @@ object MainFm: TMainFm
   end
   object Button10: TButton
     Left = 95
-    Top = 270
+    Top = 326
     Width = 50
     Height = 50
     Caption = '0'
@@ -117,7 +123,7 @@ object MainFm: TMainFm
   end
   object Button11: TButton
     Left = 235
-    Top = 90
+    Top = 146
     Width = 50
     Height = 30
     Caption = #8592' '
@@ -126,7 +132,7 @@ object MainFm: TMainFm
   end
   object Button12: TButton
     Left = 235
-    Top = 165
+    Top = 221
     Width = 50
     Height = 35
     Caption = '+'
@@ -135,7 +141,7 @@ object MainFm: TMainFm
   end
   object Button13: TButton
     Left = 235
-    Top = 125
+    Top = 181
     Width = 50
     Height = 35
     Caption = '-'
@@ -144,7 +150,7 @@ object MainFm: TMainFm
   end
   object Button14: TButton
     Left = 235
-    Top = 205
+    Top = 261
     Width = 50
     Height = 35
     Caption = '*'
@@ -153,7 +159,7 @@ object MainFm: TMainFm
   end
   object Button15: TButton
     Left = 235
-    Top = 245
+    Top = 301
     Width = 50
     Height = 35
     Caption = #247
@@ -162,7 +168,7 @@ object MainFm: TMainFm
   end
   object Button16: TButton
     Left = 235
-    Top = 285
+    Top = 341
     Width = 50
     Height = 35
     Caption = '='
@@ -171,7 +177,7 @@ object MainFm: TMainFm
   end
   object Button17: TButton
     Left = 25
-    Top = 270
+    Top = 326
     Width = 50
     Height = 50
     Caption = '('
@@ -180,11 +186,49 @@ object MainFm: TMainFm
   end
   object Button18: TButton
     Left = 165
-    Top = 270
+    Top = 326
     Width = 50
     Height = 50
     Caption = ')'
     TabOrder = 17
     OnClick = Button18Click
+  end
+  object btnFirst: TButton
+    Left = 25
+    Top = 16
+    Width = 75
+    Height = 25
+    Caption = 'First'
+    TabOrder = 18
+    OnClick = btnFirstClick
+  end
+  object btnSecond: TButton
+    Left = 121
+    Top = 16
+    Width = 75
+    Height = 25
+    Caption = 'Second'
+    TabOrder = 19
+    OnClick = btnSecondClick
+  end
+  object btnThird: TButton
+    Left = 210
+    Top = 16
+    Width = 75
+    Height = 25
+    Caption = 'Third'
+    TabOrder = 20
+    OnClick = btnThirdClick
+  end
+  object btnDeleteAll: TButton
+    Left = 25
+    Top = 115
+    Width = 260
+    Height = 25
+    BiDiMode = bdRightToLeft
+    Caption = 'C'
+    ParentBiDiMode = False
+    TabOrder = 21
+    OnClick = btnDeleteAllClick
   end
 end

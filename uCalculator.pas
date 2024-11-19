@@ -4,8 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  System.Classes, System.StrUtils, Math;
 
 type
   TNode = class
@@ -15,25 +14,329 @@ type
     FValue: Double;
     FLeft: TNode;
     FRight: TNode;
+  protected
+
   public
     constructor Create(const AIsOperation: Boolean; AOperationPriority: Integer;
       AValue: Double; ALeft: TNode; ARight: TNode);
+    destructor Destroy; override;
   end;
 
   TCalculator = class
   private
+
     FRootNode: TNode;
     FCurrentNode: TNode;
+    FError: Boolean;
   public
-    function Calc(AText: string): Double;
+    CalcLine: string;
+    BracketCounter: Integer;
+    function Calc(AText: string): string;
     function Parse(AText: string): TNode;
     function GetValue(ANode: TNode): Double;
+    destructor Destroy; override;
+    function AddSymbol(ASymbol, AText: string): string;
+    function AddText(ASymbol, AText: string): string;
+    function DeleteSymbolFromText(AText: string): string;
+    function CheckBracketCounterFunction(AText: string): Integer;
+    function CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
+    function CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
+    function CheckCorrectInputNumber(ASymbol, AText: string): string;
+    function CheckCorrectInputMinus(ASymbol, AText: string): string;
+    function CheckCorrectInputSymbol(ASymbol, AText: string): string;
+    function FinishedLine(AText: string): string;
   end;
 
 implementation
 
 { TNode }
 { TCalculator }
+
+function TCalculator.AddSymbol(ASymbol, AText: string): string;
+
+begin
+  case IndexStr(ASymbol, ['-', '+', '*', '/', '(', ')', '0', '1', '2', '3', '4',
+    '5', '6', '7', '8', '9', '=']) of
+    0:
+      begin
+        Result := CheckCorrectInputMinus(ASymbol, AText);
+      end;
+    1, 2, 3:
+      begin
+        Result := CheckCorrectInputSymbol(ASymbol, AText);
+      end;
+    4:
+      begin
+        Result := CheckCorrectInputOpenBracket(ASymbol, AText);
+      end;
+    5:
+      begin
+        Result := CheckCorrectInputCloseBracket(ASymbol, AText);
+      end;
+    6, 7, 8, 9, 10, 11, 12, 13, 14, 15:
+      begin
+        Result := CheckCorrectInputNumber(ASymbol, AText);
+      end;
+    16:
+      begin
+        Result := FinishedLine(CalcLine);
+      end;
+  else
+    begin
+      Result := ('Incorrect symbol');
+    end;
+  end;
+end;
+
+// запись символов в строку
+function TCalculator.AddText(ASymbol, AText: string): string;
+begin
+  AText := AText + ASymbol;
+  Result := AText;
+end;
+
+// удаление символов из строки
+function TCalculator.DeleteSymbolFromText(AText: string): string;
+var
+  Symbol: string;
+begin
+  if Length(AText) > 0 then
+  begin
+    Symbol := AText[Length(AText)];
+    BracketCounter := CheckBracketCounterFunction(AText);
+    Delete(AText, Length(AText), 1);
+    Result := AText;
+  end
+  else
+  begin
+    Result := '';
+  end;
+end;
+
+// проверка удаляемого символа для обновления счётчика скобок
+function TCalculator.CheckBracketCounterFunction(AText: string): Integer;
+begin
+  case AText[Length(AText)] of
+    ')':
+      begin
+        BracketCounter := BracketCounter + 1;
+        Result := BracketCounter;
+      end;
+    '(':
+      begin
+        BracketCounter := BracketCounter - 1;
+        Result := BracketCounter;
+      end;
+  else
+    Result := BracketCounter;
+  end;
+
+end;
+
+// проверка корректности введения "("
+function TCalculator.CheckCorrectInputOpenBracket(ASymbol,
+  AText: string): string;
+var
+  Symbol, symbols: string;
+  position: Integer;
+begin
+  if Length(AText) > 0 then
+  begin
+    symbols := '0123456789)';
+    Symbol := (AText[Length(AText)]);
+    position := Pos(Symbol, symbols);
+    if position > 0 then
+    begin
+      AText := AddText('*' + ASymbol, AText);
+      BracketCounter := BracketCounter + 1;
+      Result := AText;
+    end
+    else
+    begin
+      AText := AddText(ASymbol, AText);
+      BracketCounter := BracketCounter + 1;
+      Result := AText;
+    end;
+  end
+  else
+  begin
+    AText := AddText(ASymbol, AText);
+    BracketCounter := BracketCounter + 1;
+    Result := AText;
+  end;
+end;
+
+// проверка корректности введения ")"
+function TCalculator.CheckCorrectInputCloseBracket(ASymbol,
+  AText: string): string;
+var
+  Symbol, symbols: string;
+  position: Integer;
+begin
+  If BracketCounter > 0 then
+  begin
+    Symbol := (AText[Length(AText)]);
+    if Symbol = '(' then
+    begin
+      Result := AText;
+    end
+    else
+    begin
+      symbols := '+-*/';
+      position := Pos(Symbol, symbols);
+      if position > 0 then
+      begin
+        AText := DeleteSymbolFromText(AText);
+        AText := AddText(ASymbol, AText);
+        BracketCounter := BracketCounter - 1;
+        Result := AText;
+      end
+      else
+      begin
+        AText := AddText(ASymbol, AText);
+        BracketCounter := BracketCounter - 1;
+        Result := AText;
+      end;
+    end;
+  end
+  else
+  begin
+    Result := AText;
+  end;
+end;
+
+// проверка введения цифр после ")"
+function TCalculator.CheckCorrectInputNumber(ASymbol, AText: string): string;
+var
+  Symbol: string;
+begin
+  if Length(AText) > 0 then
+  begin
+    Symbol := (AText[Length(AText)]);
+    if Symbol = ')' then
+    begin
+      AText := AddText('*' + ASymbol, AText);
+      Result := AText;
+    end
+    else
+    begin
+      AText := AddText(ASymbol, AText);
+      Result := AText;
+    end;
+  end
+  else
+  begin
+    AText := AddText(ASymbol, AText);
+    Result := AText;
+  end;
+end;
+
+// проверка корректности введения минуса
+function TCalculator.CheckCorrectInputMinus(ASymbol, AText: string): string;
+var
+  Symbol, symbols: string;
+  position: Integer;
+begin
+  if Length(AText) > 0 then
+  begin
+    symbols := '+-*/';
+    Symbol := (AText[Length(AText)]);
+    position := Pos(Symbol, symbols);
+    if position > 0 then
+    begin
+      AText := DeleteSymbolFromText(AText);
+      AText := AddText(ASymbol, AText);
+      Result := AText;
+    end
+    else
+    begin
+      if Symbol = '(' then
+      begin
+        AText := AddText('0' + ASymbol, AText);
+        Result := AText;
+      end
+      else
+      begin
+        AText := AddText(ASymbol, AText);
+        Result := AText;
+      end;
+    end;
+  end
+  else
+  begin
+    AText := AddText('0' + ASymbol, AText);
+    Result := AText;
+  end;
+end;
+
+// проверка корректности введения операций (+ * ÷)
+function TCalculator.CheckCorrectInputSymbol(ASymbol, AText: string): string;
+var
+  Symbol, symbols: string;
+  position: Integer;
+begin
+  if Length(AText) > 0 then
+  begin
+    Symbol := (AText[Length(AText)]);
+    if Symbol = '(' then
+    begin
+      Result := AText;
+    end
+    else
+    begin
+      symbols := '+-*/';
+      position := Pos(Symbol, symbols);
+      if position > 0 then
+      begin
+        AText := DeleteSymbolFromText(AText);
+        Symbol := (AText[Length(AText)]);
+        if Symbol = '(' then
+        begin
+          Result := AText;
+        end
+        else
+        begin
+          AText := AddText(ASymbol, AText);
+          Result := AText;
+        end;
+      end
+      else
+      begin
+        AText := AddText(ASymbol, AText);
+        Result := AText;
+      end;
+    end;
+  end
+  else
+  begin
+    Result := AText;
+  end;
+end;
+
+// проверка строки после нажатия "="
+function TCalculator.FinishedLine(AText: string): string;
+var
+  Symbol, symbols: string;
+  position: Integer;
+begin
+  symbols := '+-*/';
+  if Length(AText) > 0 then
+  begin
+    If BracketCounter = 0 then
+    begin
+      Symbol := AText[Length(AText)];
+      position := Pos(Symbol, symbols);
+      if position > 0 then
+      begin
+        AText := DeleteSymbolFromText(AText);
+      end;
+      AText := Calc(AText);
+    end;
+  end;
+  Result := AText;
+end;
+
+// ============================================================================//
 
 // создание узла дерева
 constructor TNode.Create(const AIsOperation: Boolean;
@@ -46,12 +349,27 @@ begin
   FRight := ARight;
 end;
 
+destructor TNode.Destroy;
+begin
+  FreeAndNil(FLeft);
+  FreeAndNil(FRight);
+  inherited;
+end;
+
+destructor TCalculator.Destroy;
+begin
+  FreeAndNil(FRootNode);
+  inherited;
+end;
+
 // подсчёт значения узла
 function TCalculator.GetValue(ANode: TNode): Double;
+
 begin
-  if ANode.FIsOperation = True then
+  Result := 0;
+  if ANode.FIsOperation then
   begin
-    case StrToInt(FloatToStr(ANode.FValue)) of
+    case Round(ANode.FValue) of
       0:
         begin
           Result := GetValue(ANode.FLeft) + GetValue(ANode.FRight);
@@ -66,10 +384,13 @@ begin
         end;
       11:
         begin
-          if GetValue(ANode.FRight) <> 0 then
+          if not IsZero(GetValue(ANode.FRight)) then
             Result := GetValue(ANode.FLeft) / GetValue(ANode.FRight)
           else
-            ShowMessage('Error')
+          begin
+            FError := True;
+            Result := 0;
+          end;
         end;
     else
     end;
@@ -83,11 +404,12 @@ end;
 // пасинг строки
 function TCalculator.Parse(AText: string): TNode;
 var
-  i, vPosition, vBracketCount: Integer;
+  i, vBracketCount: Integer;
   vRight, vLeft: string;
   vValue: Double;
   vСheckbox: Boolean;
 begin
+  Result := nil;
   vBracketCount := 0;
   vСheckbox := False;
   // Для поиска + и - вне скобок
@@ -150,7 +472,7 @@ begin
             Result := FCurrentNode;
           end;
         end;
-      '÷':
+      '/':
         begin
           if vBracketCount = 0 then
           begin
@@ -172,28 +494,50 @@ begin
     if (Length(AText) > 0) and (AText[1] = '(') and (AText[Length(AText)] = ')')
     then
     begin
-      vСheckbox := True;
       AText := Copy(AText, 2, Length(AText) - 2);
+      if AText[1] = '-' then
+        AText := '0' + AText;
       FCurrentNode := Parse(AText);
       Result := FCurrentNode;
     end
     else
     // создание узла с числом (листья дерева)
     begin
-      vValue := StrToFloat(AText);
-      FCurrentNode := TNode.Create(False, 0, vValue, nil, nil);
-      Result := FCurrentNode;
-      vСheckbox := False;
+      if TryStrToFloat(AText, vValue) then
+      begin
+        FCurrentNode := TNode.Create(False, 0, vValue, nil, nil);
+        Result := FCurrentNode;
+      end
+      else
+      begin
+        FError := True;
+        Result := nil;
+      end;
     end;
   end;
 end;
 
-// запуск пасинга, вычисления и вывод результата
-function TCalculator.Calc(AText: string): Double;
+// запуск парсинга, вычисления и вывод результата
+function TCalculator.Calc(AText: string): string;
 begin
+  FRootNode.Free;
+  FError := False;
+  if AText[1] = '-' then
+    AText := '0' + AText;
   FRootNode := Parse(AText);
-  Result := GetValue(FRootNode);
-  ShowMessage(FormatFloat('0.##', Result));
+  if FError then
+  begin
+    Result := 'Error: Incorrect string';
+  end
+  else
+  begin
+    Result := FormatFloat('0.###', GetValue(FRootNode));
+    if FError then
+    begin
+      Result := 'Error: Division by zero';
+    end;
+  end;
+
 end;
 
 end.

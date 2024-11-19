@@ -29,6 +29,10 @@ type
     Button17: TButton;
     Button18: TButton;
     Label1: TLabel;
+    btnFirst: TButton;
+    btnSecond: TButton;
+    btnThird: TButton;
+    btnDeleteAll: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -50,19 +54,15 @@ type
     procedure Label1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnFirstClick(Sender: TObject);
+    procedure btnSecondClick(Sender: TObject);
+    procedure btnThirdClick(Sender: TObject);
+    procedure btnDeleteAllClick(Sender: TObject);
   private
-    FCalculator: TCalculator;
-    FTxt: string;
-    FBracketCounter: integer;
-    function AddText(ASymbol, AText: string): string;
-    function DeleteSymbolFromText(AText: string): string;
-    function CheckBracketCounterFunction(AText: string): integer;
-    function CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
-    function CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
-    function CheckCorrectInputNumber(ASymbol, AText: string): string;
-    function CheckCorrectInputMinus(ASymbol, AText: string): string;
-    function CheckCorrectInputSymbol(ASymbol, AText: string): string;
-    function FinishedLine(AText: string): string;
+    FFirstCalc: TCalculator;
+    FSecondCalc: TCalculator;
+    FThirdCalc: TCalculator;
+    FCurrentCalc: TCalculator;
   public
   end;
 
@@ -73,398 +73,165 @@ implementation
 
 {$R *.dfm}
 
-// запись символов в строку
-function TMainFm.AddText(ASymbol, AText: string): string;
-begin
-  AText := AText + ASymbol;
-  Result := AText;
-end;
-
-// удаление символов из строки
-function TMainFm.DeleteSymbolFromText(AText: string): string;
-var
-  symbol: string;
-begin
-  if Length(AText) > 0 then
-  begin
-    symbol := (AText[Length(AText)]);
-    FBracketCounter := CheckBracketCounterFunction(AText);
-    Delete(AText, Length(AText), 1);
-    Result := AText;
-  end
-  else
-  begin
-    Result := '';
-  end;
-end;
-
-// проверка удаляемого символа для обновления счётчика скобок
-function TMainFm.CheckBracketCounterFunction(AText: string): integer;
-var
-  symbol: string;
-begin
-  case AText[Length(AText)] of
-    ')':
-      begin
-        FBracketCounter := FBracketCounter + 1;
-        Result := FBracketCounter;
-      end;
-    '(':
-      begin
-        FBracketCounter := FBracketCounter - 1;
-        Result := FBracketCounter;
-
-      end;
-  else
-    Result := FBracketCounter;
-  end;
-
-end;
-
-// проверка корректности введения "("
-function TMainFm.CheckCorrectInputOpenBracket(ASymbol, AText: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  if Length(AText) > 0 then
-  begin
-    symbols := '0123456789)';
-    symbol := (AText[Length(AText)]);
-    position := Pos(symbol, symbols);
-    if position > 0 then
-    begin
-      AText := AddText('*' + ASymbol, AText);
-      FBracketCounter := FBracketCounter + 1;
-      Result := AText;
-    end
-    else
-    begin
-      AText := AddText(ASymbol, AText);
-      FBracketCounter := FBracketCounter + 1;
-      Result := AText;
-    end;
-  end
-  else
-  begin
-    AText := AddText(ASymbol, AText);
-    FBracketCounter := FBracketCounter + 1;
-    Result := AText;
-  end;
-end;
-
-// проверка корректности введения ")"
-function TMainFm.CheckCorrectInputCloseBracket(ASymbol, AText: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  If FBracketCounter > 0 then
-  begin
-    symbol := (AText[Length(AText)]);
-    if symbol = '(' then
-    begin
-      ShowMessage('the value between the brackets "( )" is missing');
-      Result := AText;
-    end
-    else
-    begin
-      symbols := '+-*÷';
-      position := Pos(symbol, symbols);
-      if position > 0 then
-      begin
-        AText := DeleteSymbolFromText(AText);
-        AText := AddText(ASymbol, AText);
-        FBracketCounter := FBracketCounter - 1;
-        Result := AText;
-      end
-      else
-      begin
-        AText := AddText(ASymbol, AText);
-        FBracketCounter := FBracketCounter - 1;
-        Result := AText;
-      end;
-    end;
-  end
-  else
-  begin
-    Result := AText;
-    ShowMessage('The open bracket "(" not found');
-  end;
-end;
-
-// проверка введения цифр после ")"
-function TMainFm.CheckCorrectInputNumber(ASymbol, AText: string): string;
-var
-  symbol: string;
-
-begin
-  if Length(AText) > 0 then
-  begin
-    symbol := (AText[Length(AText)]);
-    if symbol = ')' then
-    begin
-      AText := AddText('*' + ASymbol, AText);
-      Result := AText;
-    end
-    else
-    begin
-      AText := AddText(ASymbol, AText);
-      Result := AText;
-    end;
-  end
-  else
-  begin
-    AText := AddText(ASymbol, AText);
-    Result := AText;
-  end;
-end;
-
-// проверка корректности введения минуса
-function TMainFm.CheckCorrectInputMinus(ASymbol, AText: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  if Length(AText) > 0 then
-  begin
-    symbols := '+-*÷';
-    symbol := (AText[Length(AText)]);
-    position := Pos(symbol, symbols);
-    if position > 0 then
-    begin
-      AText := DeleteSymbolFromText(AText);
-      AText := AddText(ASymbol, AText);
-      Result := AText;
-    end
-    else
-    begin
-      if symbol = '(' then
-      begin
-        AText := AddText('0' + ASymbol, AText);
-        Result := AText;
-      end
-      else
-      begin
-        AText := AddText(ASymbol, AText);
-        Result := AText;
-      end;
-    end;
-  end
-  else
-  begin
-    AText := AddText('0' + ASymbol, AText);
-    Result := AText;
-  end;
-end;
-
-// проверка корректности введения операций (+ * ÷)
-function TMainFm.CheckCorrectInputSymbol(ASymbol, AText: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  if Length(AText) > 0 then
-  begin
-    symbol := (AText[Length(AText)]);
-    if symbol = '(' then
-    begin
-      Result := AText;
-    end
-    else
-    begin
-      symbols := '+-*÷';
-      position := Pos(symbol, symbols);
-      if position > 0 then
-      begin
-        AText := DeleteSymbolFromText(AText);
-        symbol := (AText[Length(AText)]);
-        if symbol = '(' then
-        begin
-          Result := AText;
-        end
-        else
-        begin
-          AText := AddText(ASymbol, AText);
-          Result := AText;
-        end;
-      end
-      else
-      begin
-        AText := AddText(ASymbol, AText);
-        Result := AText;
-      end;
-    end;
-  end
-  else
-  begin
-    Result := AText;
-  end;
-end;
-
-// проверка строки после нажатия "="
-function TMainFm.FinishedLine(AText: string): string;
-var
-  symbol, symbols: string;
-  position: integer;
-begin
-  symbols := '+-*÷';
-  if Length(AText) > 0 then
-  begin
-    if AText = '-' then
-    begin
-      ShowMessage('no result');
-      AText := '';
-    end;
-    If FBracketCounter = 0 then
-    begin
-      symbol := AText[Length(AText)];
-      position := Pos(symbol, symbols);
-      if position > 0 then
-      begin
-        AText := DeleteSymbolFromText(AText);
-      end;
-      Result := FormatFloat('0.##', FCalculator.Calc(AText));
-    end
-    else
-    begin
-      ShowMessage('The close bracket ")" not found');
-    end;
-  end
-  else
-  begin
-    ShowMessage('no result');
-  end;
-  Result := AText;
-end;
-
 // создание объекта "FCalculator" после создания главного окна
 procedure TMainFm.FormCreate(Sender: TObject);
 begin
-  FCalculator := TCalculator.Create;
+  FFirstCalc := TCalculator.Create;
+  FSecondCalc := TCalculator.Create;
+  FThirdCalc := TCalculator.Create;
+  FCurrentCalc := FFirstCalc;
 end;
 
 procedure TMainFm.FormDestroy(Sender: TObject);
 begin
-  FCalculator.Free;
+  FFirstCalc.Free;
+  FSecondCalc.Free;
+  FThirdCalc.Free;
 end;
 
-// кнопка удаления
+// кнопки удаления
 procedure TMainFm.Button11Click(Sender: TObject);
 begin
-  FTxt := DeleteSymbolFromText(FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.DeleteSymbolFromText
+    (FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
+end;
+
+procedure TMainFm.btnDeleteAllClick(Sender: TObject);
+begin
+  FCurrentCalc.CalcLine := '';
+  FCurrentCalc.BracketCounter := 0;
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 // кнопки символов
 procedure TMainFm.Button12Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputSymbol('+', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('+', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button13Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputMinus('-', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('-', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button14Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputSymbol('*', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('*', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button15Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputSymbol('÷', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('÷', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
-// Кнопки скобок
+// кнопки скобок
 procedure TMainFm.Button17Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputOpenBracket('(', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('(', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button18Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputCloseBracket(')', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol(')', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 // кнопка равно
 procedure TMainFm.Button16Click(Sender: TObject);
 begin
-  FTxt := FinishedLine(FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('=', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 // кнопки цифр
 procedure TMainFm.Button10Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('0', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('0', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button1Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('1', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('1', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button2Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('2', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('2', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button3Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('3', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('3', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button4Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('4', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('4', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button5Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('5', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('5', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button6Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('6', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('6', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button7Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('7', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('7', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button8Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('8', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('8', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Button9Click(Sender: TObject);
 begin
-  FTxt := CheckCorrectInputNumber('9', FTxt);
-  Label1.Caption := FTxt;
+  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('9', FCurrentCalc.CalcLine);
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 procedure TMainFm.Label1Click(Sender: TObject);
 begin
   //
+end;
+
+// кнопки переключения калькуляторов
+procedure TMainFm.btnFirstClick(Sender: TObject);
+begin
+  FCurrentCalc := FFirstCalc;
+  Label1.Caption := FCurrentCalc.CalcLine;
+end;
+
+procedure TMainFm.btnSecondClick(Sender: TObject);
+begin
+  FCurrentCalc := FSecondCalc;
+  Label1.Caption := FCurrentCalc.CalcLine;
+end;
+
+procedure TMainFm.btnThirdClick(Sender: TObject);
+begin
+  FCurrentCalc := FThirdCalc;
+  Label1.Caption := FCurrentCalc.CalcLine;
 end;
 
 end.
