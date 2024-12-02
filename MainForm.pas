@@ -4,59 +4,57 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  uCalculator;
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, uCalculator;
 
 type
   TMainFm = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Button5: TButton;
-    Button6: TButton;
-    Button7: TButton;
-    Button8: TButton;
-    Button9: TButton;
-    Button10: TButton;
-    Button11: TButton;
-    Button12: TButton;
-    Button13: TButton;
-    Button14: TButton;
-    Button15: TButton;
-    Button16: TButton;
-    Button17: TButton;
-    Button18: TButton;
-    Label1: TLabel;
-    btnFirst: TButton;
-    btnSecond: TButton;
-    btnThird: TButton;
+    btnOne: TButton;
+    btnTwo: TButton;
+    btnThree: TButton;
+    btnFour: TButton;
+    btnFive: TButton;
+    btnSix: TButton;
+    btnSeven: TButton;
+    btnEight: TButton;
+    btnNine: TButton;
+    btnZero: TButton;
+    btnDeleteSymbol: TButton;
+    btnPlus: TButton;
+    btnMinus: TButton;
+    btnMultiply: TButton;
+    btnDivide: TButton;
+    btnEquals: TButton;
+    btnOpenBracket: TButton;
+    btnCloseBracket: TButton;
+    CalcLineLabel: TLabel;
+    btnFirstCalc: TButton;
+    btnSecondCalc: TButton;
+    btnThirdCalc: TButton;
     btnDeleteAll: TButton;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
-    procedure Button7Click(Sender: TObject);
-    procedure Button8Click(Sender: TObject);
-    procedure Button9Click(Sender: TObject);
-    procedure Button10Click(Sender: TObject);
-    procedure Button11Click(Sender: TObject);
-    procedure Button12Click(Sender: TObject);
-    procedure Button13Click(Sender: TObject);
-    procedure Button14Click(Sender: TObject);
-    procedure Button15Click(Sender: TObject);
-    procedure Button16Click(Sender: TObject);
-    procedure Button17Click(Sender: TObject);
-    procedure Button18Click(Sender: TObject);
-    procedure Label1Click(Sender: TObject);
+    procedure btnOneClick(Sender: TObject);
+    procedure btnTwoClick(Sender: TObject);
+    procedure btnThreeClick(Sender: TObject);
+    procedure btnFourClick(Sender: TObject);
+    procedure btnFiveClick(Sender: TObject);
+    procedure btnSixClick(Sender: TObject);
+    procedure btnSevenClick(Sender: TObject);
+    procedure btnEightClick(Sender: TObject);
+    procedure btnNineClick(Sender: TObject);
+    procedure btnZeroClick(Sender: TObject);
+    procedure btnDeleteSymbolClick(Sender: TObject);
+    procedure btnPlusClick(Sender: TObject);
+    procedure btnMinusClick(Sender: TObject);
+    procedure btnMultiplyClick(Sender: TObject);
+    procedure btnDivideClick(Sender: TObject);
+    procedure btnEqualsClick(Sender: TObject);
+    procedure btnOpenBracketClick(Sender: TObject);
+    procedure btnCloseBracketClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btnFirstClick(Sender: TObject);
-    procedure btnSecondClick(Sender: TObject);
-    procedure btnThirdClick(Sender: TObject);
+    procedure btnFirstCalcClick(Sender: TObject);
+    procedure btnSecondCalcClick(Sender: TObject);
+    procedure btnThirdCalcClick(Sender: TObject);
     procedure btnDeleteAllClick(Sender: TObject);
   private
     FFirstCalc: TCalculator;
@@ -70,10 +68,8 @@ var
   MainFm: TMainFm;
 
 implementation
-
 {$R *.dfm}
 
-// создание объекта "FCalculator" после создания главного окна
 procedure TMainFm.FormCreate(Sender: TObject);
 begin
   FFirstCalc := TCalculator.Create;
@@ -90,148 +86,122 @@ begin
 end;
 
 // кнопки удаления
-procedure TMainFm.Button11Click(Sender: TObject);
+procedure TMainFm.btnDeleteSymbolClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.DeleteSymbolFromText
-    (FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.DeleteSymbol;
 end;
 
 procedure TMainFm.btnDeleteAllClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := '';
-  FCurrentCalc.BracketCounter := 0;
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.DeleteText;
 end;
 
 // кнопки символов
-procedure TMainFm.Button12Click(Sender: TObject);
+procedure TMainFm.btnPlusClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('+', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('+');
 end;
 
-procedure TMainFm.Button13Click(Sender: TObject);
+procedure TMainFm.btnMinusClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('-', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('-');
 end;
 
-procedure TMainFm.Button14Click(Sender: TObject);
+procedure TMainFm.btnMultiplyClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('*', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('*');
 end;
 
-procedure TMainFm.Button15Click(Sender: TObject);
+procedure TMainFm.btnDivideClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('/', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('/');
+end;
+
+procedure TMainFm.btnEqualsClick(Sender: TObject);
+begin
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('=');
 end;
 
 // кнопки скобок
-procedure TMainFm.Button17Click(Sender: TObject);
+procedure TMainFm.btnOpenBracketClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('(', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('(');
 end;
 
-procedure TMainFm.Button18Click(Sender: TObject);
+procedure TMainFm.btnCloseBracketClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol(')', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
-end;
-
-// кнопка равно
-procedure TMainFm.Button16Click(Sender: TObject);
-begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('=', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol(')');
 end;
 
 // кнопки цифр
-procedure TMainFm.Button10Click(Sender: TObject);
+procedure TMainFm.btnZeroClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('0', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('0');
 end;
 
-procedure TMainFm.Button1Click(Sender: TObject);
+procedure TMainFm.btnOneClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('1', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('1');
 end;
 
-procedure TMainFm.Button2Click(Sender: TObject);
+procedure TMainFm.btnTwoClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('2', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('2');
 end;
 
-procedure TMainFm.Button3Click(Sender: TObject);
+procedure TMainFm.btnThreeClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('3', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('3');
 end;
 
-procedure TMainFm.Button4Click(Sender: TObject);
+procedure TMainFm.btnFourClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('4', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('4');
 end;
 
-procedure TMainFm.Button5Click(Sender: TObject);
+procedure TMainFm.btnFiveClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('5', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('5');
 end;
 
-procedure TMainFm.Button6Click(Sender: TObject);
+procedure TMainFm.btnSixClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('6', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('6');
 end;
 
-procedure TMainFm.Button7Click(Sender: TObject);
+procedure TMainFm.btnSevenClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('7', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('7');
 end;
 
-procedure TMainFm.Button8Click(Sender: TObject);
+procedure TMainFm.btnEightClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('8', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('8');
 end;
 
-procedure TMainFm.Button9Click(Sender: TObject);
+procedure TMainFm.btnNineClick(Sender: TObject);
 begin
-  FCurrentCalc.CalcLine := FCurrentCalc.AddSymbol('9', FCurrentCalc.CalcLine);
-  Label1.Caption := FCurrentCalc.CalcLine;
-end;
-
-procedure TMainFm.Label1Click(Sender: TObject);
-begin
-  //
+  CalcLineLabel.Caption := FCurrentCalc.AddSymbol('9');
 end;
 
 // кнопки переключения калькуляторов
-procedure TMainFm.btnFirstClick(Sender: TObject);
+procedure TMainFm.btnFirstCalcClick(Sender: TObject);
 begin
   FCurrentCalc := FFirstCalc;
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.ReturnCalcLine;
 end;
 
-procedure TMainFm.btnSecondClick(Sender: TObject);
+procedure TMainFm.btnSecondCalcClick(Sender: TObject);
 begin
   FCurrentCalc := FSecondCalc;
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.ReturnCalcLine;
 end;
 
-procedure TMainFm.btnThirdClick(Sender: TObject);
+procedure TMainFm.btnThirdCalcClick(Sender: TObject);
 begin
   FCurrentCalc := FThirdCalc;
-  Label1.Caption := FCurrentCalc.CalcLine;
+  CalcLineLabel.Caption := FCurrentCalc.ReturnCalcLine;
 end;
 
 end.

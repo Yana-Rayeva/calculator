@@ -9,6 +9,7 @@ uses
 
 var
   Text: string;
+  i: integer;
   FCalc: TCalculator;
 
 begin
@@ -19,9 +20,12 @@ begin
       begin
         WriteLn('¬ведите математическое выражение');
         Read(Text);
-        WriteLn(FCalc.Calc(Text));
+        FCalc.AddText(Text);
+        WriteLn(FCalc.Calc);
         WriteLn('');
         Readln;
+        Text := '';
+        FCalc.DeleteText;
       end;
     finally
       FCalc.Free;

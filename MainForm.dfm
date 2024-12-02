@@ -15,7 +15,7 @@ object MainFm: TMainFm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   TextHeight = 15
-  object Label1: TLabel
+  object CalcLineLabel: TLabel
     Left = 25
     Top = 64
     Width = 260
@@ -29,196 +29,195 @@ object MainFm: TMainFm
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label1Click
   end
-  object Button1: TButton
+  object btnOne: TButton
     Left = 25
     Top = 266
     Width = 50
     Height = 50
     Caption = '1'
     TabOrder = 0
-    OnClick = Button1Click
+    OnClick = btnOneClick
   end
-  object Button2: TButton
+  object btnTwo: TButton
     Left = 95
     Top = 266
     Width = 50
     Height = 50
     Caption = '2'
     TabOrder = 1
-    OnClick = Button2Click
+    OnClick = btnTwoClick
   end
-  object Button3: TButton
+  object btnThree: TButton
     Left = 165
     Top = 266
     Width = 50
     Height = 50
     Caption = '3'
     TabOrder = 2
-    OnClick = Button3Click
+    OnClick = btnThreeClick
   end
-  object Button4: TButton
+  object btnFour: TButton
     Left = 25
     Top = 206
     Width = 50
     Height = 50
     Caption = '4'
     TabOrder = 3
-    OnClick = Button4Click
+    OnClick = btnFourClick
   end
-  object Button5: TButton
+  object btnFive: TButton
     Left = 95
     Top = 206
     Width = 50
     Height = 50
     Caption = '5'
     TabOrder = 4
-    OnClick = Button5Click
+    OnClick = btnFiveClick
   end
-  object Button6: TButton
+  object btnSix: TButton
     Left = 165
     Top = 206
     Width = 50
     Height = 50
     Caption = '6'
     TabOrder = 5
-    OnClick = Button6Click
+    OnClick = btnSixClick
   end
-  object Button7: TButton
+  object btnSeven: TButton
     Left = 25
     Top = 146
     Width = 50
     Height = 50
     Caption = '7'
     TabOrder = 6
-    OnClick = Button7Click
+    OnClick = btnSevenClick
   end
-  object Button8: TButton
+  object btnEight: TButton
     Left = 95
     Top = 146
     Width = 50
     Height = 50
     Caption = '8'
     TabOrder = 7
-    OnClick = Button8Click
+    OnClick = btnEightClick
   end
-  object Button9: TButton
+  object btnNine: TButton
     Left = 165
     Top = 146
     Width = 50
     Height = 50
     Caption = '9'
     TabOrder = 8
-    OnClick = Button9Click
+    OnClick = btnNineClick
   end
-  object Button10: TButton
+  object btnZero: TButton
     Left = 95
     Top = 326
     Width = 50
     Height = 50
     Caption = '0'
     TabOrder = 9
-    OnClick = Button10Click
+    OnClick = btnZeroClick
   end
-  object Button11: TButton
+  object btnDeleteSymbol: TButton
     Left = 235
     Top = 146
     Width = 50
     Height = 30
     Caption = #8592' '
     TabOrder = 10
-    OnClick = Button11Click
+    OnClick = btnDeleteSymbolClick
   end
-  object Button12: TButton
+  object btnPlus: TButton
     Left = 235
     Top = 221
     Width = 50
     Height = 35
     Caption = '+'
     TabOrder = 11
-    OnClick = Button12Click
+    OnClick = btnPlusClick
   end
-  object Button13: TButton
+  object btnMinus: TButton
     Left = 235
     Top = 181
     Width = 50
     Height = 35
     Caption = '-'
     TabOrder = 12
-    OnClick = Button13Click
+    OnClick = btnMinusClick
   end
-  object Button14: TButton
+  object btnMultiply: TButton
     Left = 235
     Top = 261
     Width = 50
     Height = 35
     Caption = '*'
     TabOrder = 13
-    OnClick = Button14Click
+    OnClick = btnMultiplyClick
   end
-  object Button15: TButton
+  object btnDivide: TButton
     Left = 235
     Top = 301
     Width = 50
     Height = 35
     Caption = #247
     TabOrder = 14
-    OnClick = Button15Click
+    OnClick = btnDivideClick
   end
-  object Button16: TButton
+  object btnEquals: TButton
     Left = 235
     Top = 341
     Width = 50
     Height = 35
     Caption = '='
     TabOrder = 15
-    OnClick = Button16Click
+    OnClick = btnEqualsClick
   end
-  object Button17: TButton
+  object btnOpenBracket: TButton
     Left = 25
     Top = 326
     Width = 50
     Height = 50
     Caption = '('
     TabOrder = 16
-    OnClick = Button17Click
+    OnClick = btnOpenBracketClick
   end
-  object Button18: TButton
+  object btnCloseBracket: TButton
     Left = 165
     Top = 326
     Width = 50
     Height = 50
     Caption = ')'
     TabOrder = 17
-    OnClick = Button18Click
+    OnClick = btnCloseBracketClick
   end
-  object btnFirst: TButton
+  object btnFirstCalc: TButton
     Left = 25
     Top = 16
     Width = 75
     Height = 25
     Caption = 'First'
     TabOrder = 18
-    OnClick = btnFirstClick
+    OnClick = btnFirstCalcClick
   end
-  object btnSecond: TButton
+  object btnSecondCalc: TButton
     Left = 121
     Top = 16
     Width = 75
     Height = 25
     Caption = 'Second'
     TabOrder = 19
-    OnClick = btnSecondClick
+    OnClick = btnSecondCalcClick
   end
-  object btnThird: TButton
+  object btnThirdCalc: TButton
     Left = 210
     Top = 16
     Width = 75
     Height = 25
     Caption = 'Third'
     TabOrder = 20
-    OnClick = btnThirdClick
+    OnClick = btnThirdCalcClick
   end
   object btnDeleteAll: TButton
     Left = 25
