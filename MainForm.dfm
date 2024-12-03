@@ -37,7 +37,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '1'
     TabOrder = 0
-    OnClick = btnOneClick
+    OnClick = btnOnClick
   end
   object btnTwo: TButton
     Left = 95
@@ -46,7 +46,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '2'
     TabOrder = 1
-    OnClick = btnTwoClick
+    OnClick = btnOnClick
   end
   object btnThree: TButton
     Left = 165
@@ -55,7 +55,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '3'
     TabOrder = 2
-    OnClick = btnThreeClick
+    OnClick = btnOnClick
   end
   object btnFour: TButton
     Left = 25
@@ -64,7 +64,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '4'
     TabOrder = 3
-    OnClick = btnFourClick
+    OnClick = btnOnClick
   end
   object btnFive: TButton
     Left = 95
@@ -73,7 +73,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '5'
     TabOrder = 4
-    OnClick = btnFiveClick
+    OnClick = btnOnClick
   end
   object btnSix: TButton
     Left = 165
@@ -82,7 +82,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '6'
     TabOrder = 5
-    OnClick = btnSixClick
+    OnClick = btnOnClick
   end
   object btnSeven: TButton
     Left = 25
@@ -91,7 +91,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '7'
     TabOrder = 6
-    OnClick = btnSevenClick
+    OnClick = btnOnClick
   end
   object btnEight: TButton
     Left = 95
@@ -100,7 +100,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '8'
     TabOrder = 7
-    OnClick = btnEightClick
+    OnClick = btnOnClick
   end
   object btnNine: TButton
     Left = 165
@@ -109,7 +109,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '9'
     TabOrder = 8
-    OnClick = btnNineClick
+    OnClick = btnOnClick
   end
   object btnZero: TButton
     Left = 95
@@ -118,7 +118,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '0'
     TabOrder = 9
-    OnClick = btnZeroClick
+    OnClick = btnOnClick
   end
   object btnDeleteSymbol: TButton
     Left = 235
@@ -136,7 +136,7 @@ object MainFm: TMainFm
     Height = 35
     Caption = '+'
     TabOrder = 11
-    OnClick = btnPlusClick
+    OnClick = btnOnClick
   end
   object btnMinus: TButton
     Left = 235
@@ -145,7 +145,7 @@ object MainFm: TMainFm
     Height = 35
     Caption = '-'
     TabOrder = 12
-    OnClick = btnMinusClick
+    OnClick = btnOnClick
   end
   object btnMultiply: TButton
     Left = 235
@@ -154,16 +154,16 @@ object MainFm: TMainFm
     Height = 35
     Caption = '*'
     TabOrder = 13
-    OnClick = btnMultiplyClick
+    OnClick = btnOnClick
   end
   object btnDivide: TButton
     Left = 235
     Top = 301
     Width = 50
     Height = 35
-    Caption = #247
+    Caption = '/'
     TabOrder = 14
-    OnClick = btnDivideClick
+    OnClick = btnOnClick
   end
   object btnEquals: TButton
     Left = 235
@@ -172,7 +172,7 @@ object MainFm: TMainFm
     Height = 35
     Caption = '='
     TabOrder = 15
-    OnClick = btnEqualsClick
+    OnClick = btnOnClick
   end
   object btnOpenBracket: TButton
     Left = 25
@@ -181,7 +181,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = '('
     TabOrder = 16
-    OnClick = btnOpenBracketClick
+    OnClick = btnOnClick
   end
   object btnCloseBracket: TButton
     Left = 165
@@ -190,7 +190,7 @@ object MainFm: TMainFm
     Height = 50
     Caption = ')'
     TabOrder = 17
-    OnClick = btnCloseBracketClick
+    OnClick = btnOnClick
   end
   object btnFirstCalc: TButton
     Left = 25
@@ -219,7 +219,7 @@ object MainFm: TMainFm
     TabOrder = 20
     OnClick = btnThirdCalcClick
   end
-  object btnDeleteAll: TButton
+  object btnDeleteText: TButton
     Left = 25
     Top = 115
     Width = 260
@@ -228,6 +228,6 @@ object MainFm: TMainFm
     Caption = 'C'
     ParentBiDiMode = False
     TabOrder = 21
-    OnClick = btnDeleteAllClick
+    OnClick = btnDeleteTextClick
   end
 end

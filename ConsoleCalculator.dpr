@@ -20,12 +20,12 @@ begin
       begin
         WriteLn('¬ведите математическое выражение');
         Read(Text);
-        FCalc.AddText(Text);
+        FCalc.CalcLine := Text;
         WriteLn(FCalc.Calc);
         WriteLn('');
         Readln;
         Text := '';
-        FCalc.DeleteText;
+        FCalc.CalcLine := '';
       end;
     finally
       FCalc.Free;
